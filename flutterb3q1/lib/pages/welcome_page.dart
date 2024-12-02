@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutterb3q1/pages/add_page.dart';
+import 'add_page.dart';
 
 void main() {
   runApp(const MyApp());
