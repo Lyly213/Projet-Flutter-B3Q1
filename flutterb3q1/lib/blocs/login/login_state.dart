@@ -15,7 +15,7 @@ class LoginError extends LoginState {
 }
 
 class LoggedIn extends LoginState {
-  final User user;
+  final AppUser user;
 
   LoggedIn(this.user);
 }

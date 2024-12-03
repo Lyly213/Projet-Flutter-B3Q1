@@ -53,10 +53,10 @@ class _AddPageState extends State<AddPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 255, 227, 125),
+        backgroundColor: Colors.green,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.green),
+          icon: const Icon(Icons.close, color: Colors.white),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -66,7 +66,7 @@ class _AddPageState extends State<AddPage> {
             onPressed: () {},
             child: const Text(
               'add',
-              style: TextStyle(color: Colors.green, fontSize: 18),
+              style: TextStyle(color: Colors.white, fontSize: 18),
             ),
           ),
         ],
@@ -187,10 +187,10 @@ class _AddPageState extends State<AddPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildColorCircle(Colors.pink),
-                _buildColorCircle(Colors.yellow),
-                _buildColorCircle(Colors.green),
-                _buildColorCircle(Colors.purple),
+                _buildColorCircle(const Color.fromARGB(255, 255, 166, 196)),
+                _buildColorCircle(const Color.fromARGB(255, 255, 198, 141)),
+                _buildColorCircle(const Color.fromARGB(255, 201, 165, 255)),
+                _buildColorCircle(const Color.fromARGB(255, 162, 204, 255)),
               ],
             ),
           ],

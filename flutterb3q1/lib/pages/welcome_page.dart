@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Habit Tracker',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 255, 227, 125)),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 252, 230, 152)),
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Today'),
@@ -42,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 255, 227, 125),
+        backgroundColor: const Color.fromARGB(255, 173, 255, 159),
         title: Text(widget.title),
       ),
       body: Column(
@@ -70,8 +70,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: _selectedDayIndex == index
-                              ? Colors.blue
-                              : Colors.black,
+                              ? const Color.fromARGB(255, 0, 115, 35)
+                              : const Color.fromARGB(255, 255, 255, 255),
                         ),
                       ),
                       const SizedBox(height: 5),
@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       CircleAvatar(
                         radius: 10,
                         backgroundColor: _selectedDayIndex == index
-                            ? Colors.blue
+                            ? const Color.fromARGB(255, 0, 115, 35)
                             : Colors.grey[300],
                         child: Text(
                           '${index + 1}',

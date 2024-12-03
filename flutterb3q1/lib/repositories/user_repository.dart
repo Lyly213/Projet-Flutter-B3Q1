@@ -1,15 +1,44 @@
-import '../models/user.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class UserRepository {
+  final FirebaseAuth _firebaseAuth;
+
+  UserRepository({FirebaseAuth? firebaseAuth})
+      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+
   Future<User> signIn({required String email, required String password}) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (password == 'password') {
-      return User(email: email);
+    try {
+      UserCredential userCredential = await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      final user = userCredential.user;
+
+      if(user == null || user.email == null) {
+        throw Exception('Login failed: ${userCredential.toString()}');
+      }
+
+      return user;
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        throw Exception('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        throw Exception('Incorrect password.');
+      } else {
+        throw Exception('Login failed: ${e.message}');
+      }
     }
-    throw Exception('Login failed');
   }
 
   Future<void> signOut() async {
-    await Future.delayed(const Duration(milliseconds: 500));
+    await _firebaseAuth.signOut();
+  }
+
+  User? get currentUser {
+    return _firebaseAuth.currentUser;
+  }
+
+  Stream<User?> get userChanges {
+    return _firebaseAuth.authStateChanges();
   }
 }

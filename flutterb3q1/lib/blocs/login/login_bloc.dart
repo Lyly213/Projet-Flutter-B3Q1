@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutterb3q1/models/user.dart';
 import 'package:flutterb3q1/repositories/user_repository.dart';
 
 import 'login_event.dart';
@@ -11,9 +12,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<SignInEvent>((event, emit) async {
       try {
         emit(const LoggingIn());
-        final user = await userRepository.signIn(
-            email: event.email, password: event.password);
-        emit(LoggedIn(user));
+        final firebaseUser = await userRepository.signIn(
+            email: event.email, 
+            password: event.password);
+        final appUser = AppUser(email: firebaseUser.email!);
+        emit(LoggedIn(appUser));
       } catch (e) {
         emit(LoginError(e.toString()));
       }
