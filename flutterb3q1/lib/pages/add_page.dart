@@ -10,6 +10,7 @@ class AddPage extends StatefulWidget {
 class _AddPageState extends State<AddPage> {
   Color _selectedColor = const Color.fromARGB(255, 255, 227, 125);
   DateTime? _selectedDate;
+  final TextEditingController _habitNameController = TextEditingController();
 
   void _selectColor(Color color) {
     setState(() {
@@ -29,6 +30,12 @@ class _AddPageState extends State<AddPage> {
         _selectedDate = picked;
       });
     }
+  }
+
+  @override
+  void dispose() {
+    _habitNameController.dispose();
+    super.dispose();
   }
 
   Widget _buildColorCircle(Color color) {
@@ -63,7 +70,15 @@ class _AddPageState extends State<AddPage> {
         ),
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              final habitName = _habitNameController.text;
+              if(habitName.isNotEmpty && _selectedDate != null) {
+                Navigator.pop(context, {
+                  'name': habitName,
+                  'color': _selectedColor,
+                });
+              }
+            },
             child: const Text(
               'add',
               style: TextStyle(color: Colors.white, fontSize: 18),
@@ -86,6 +101,7 @@ class _AddPageState extends State<AddPage> {
             ),
             const SizedBox(height: 8),
             TextFormField(
+              controller: _habitNameController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),

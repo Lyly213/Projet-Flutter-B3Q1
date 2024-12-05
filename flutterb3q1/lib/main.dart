@@ -23,6 +23,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Habit Tracker',
       theme: ThemeData(
+        primaryColor: const Color(0xFF6B8E23),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 251, 242, 218),
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 173, 255, 159)),
         useMaterial3: true,
       ),
