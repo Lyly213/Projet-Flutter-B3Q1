@@ -1,30 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutterb3q1/blocs/card/card_bloc.dart';
+import 'package:flutterb3q1/blocs/card/card_event.dart';
+import 'package:flutterb3q1/blocs/card/card_state.dart';
 import 'add_page.dart';
 import 'statistics_page.dart';
+import '../repositories/card_repository.dart';
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key, required this.title});
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => CardBloc(cardRepository: CardRepository())..add(LoadCardsEvent()),
+      child: MyHomePageContent(title: title),
+    );
+  }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  // Initialisation de la sélection du jour (par défaut : jeudi)
+class MyHomePageContent extends StatefulWidget {
+  const MyHomePageContent({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<MyHomePageContent> createState() => _MyHomePageContentState();
+}
+
+class _MyHomePageContentState extends State<MyHomePageContent> {
   int _selectedDayIndex = 3;
-
-  // Liste des jours de la semaine
   final List<String> _days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-  final List<Map<String, dynamic>> _cards = [];
-  void addCard(String name, Color color) {
-    setState(() {
-      _cards.add({'name': name, 'color': color});
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +60,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Afficher les initiales des jours
                       Text(
                         _days[index],
                         style: TextStyle(
@@ -63,7 +71,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ),
                       const SizedBox(height: 5),
-                      // Afficher le cercle pour le numéro du jour
                       CircleAvatar(
                         radius: 10,
                         backgroundColor: _selectedDayIndex == index
@@ -88,25 +95,37 @@ class _MyHomePageState extends State<MyHomePage> {
           const SizedBox(height: 20),
           // Contenu principal
           Expanded(
-            child: ListView.builder(
-            padding: const EdgeInsets.all(8.0),
-              itemCount: _cards.length,
-              itemBuilder: (context, index) {
-                final card = _cards[index];
-                return Card(
-                  color: card['color'],
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  child: ListTile(
-                    leading: Checkbox(
-                      value: false,
-                      onChanged: (bool? value) {},
-                    ),
-                    title: Text(
-                      card['name'],
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                  ),
-                );
+            child: BlocBuilder<CardBloc, CardState>(
+              builder: (context, state) {
+                if (state is CardsLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is CardsLoaded) {
+                  final cards = state.cards;
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(8.0),
+                    itemCount: cards.length,
+                    itemBuilder: (context, index) {
+                      final card = cards[index];
+                      return Card(
+                        color: card['color'],
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        child: ListTile(
+                          leading: Checkbox(
+                            value: false,
+                            onChanged: (bool? value) {},
+                          ),
+                          title: Text(
+                            card['name'],
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                } else if (state is CardsError) {
+                  return Center(child: Text('Error: ${state.error}'));
+                }
+                return const SizedBox.shrink();
               },
             ),
           ),
@@ -142,8 +161,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   MaterialPageRoute(builder: (context) => const AddPage()),
                 );
 
-                if(result != null && result is Map<String, dynamic>) {
-                  addCard(result['name'], result['color']);
+                if (result != null && result is Map<String, dynamic>) {
+                  context.read<CardBloc>().add(
+                        AddCardEvent(
+                          name: result['name'],
+                          color: result['color'],
+                          date: result['date'],
+                          hours: result['hours'],
+                          frequency: result['frequency'],
+                        ),
+                      );
                 }
               },
               tooltip: 'Go to Add Page',

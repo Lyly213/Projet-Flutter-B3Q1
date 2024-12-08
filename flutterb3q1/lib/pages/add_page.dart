@@ -10,6 +10,8 @@ class AddPage extends StatefulWidget {
 class _AddPageState extends State<AddPage> {
   Color _selectedColor = const Color.fromARGB(255, 255, 227, 125);
   DateTime? _selectedDate;
+  String? _selectedHour;
+  String? _selectedFrequency;
   final TextEditingController _habitNameController = TextEditingController();
 
   void _selectColor(Color color) {
@@ -76,7 +78,14 @@ class _AddPageState extends State<AddPage> {
                 Navigator.pop(context, {
                   'name': habitName,
                   'color': _selectedColor,
+                  'date': _selectedDate!,
+                  'hours': _selectedHour ?? 'all day',
+                  'frequency': _selectedFrequency ?? 'none',
                 });
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please fill all fields')),
+                );
               }
             },
             child: const Text(
