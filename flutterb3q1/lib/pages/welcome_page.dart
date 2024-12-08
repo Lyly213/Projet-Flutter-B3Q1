@@ -5,6 +5,7 @@ import 'package:flutterb3q1/blocs/card/card_bloc.dart';
 import 'package:flutterb3q1/blocs/card/card_event.dart';
 import 'package:flutterb3q1/blocs/card/card_state.dart';
 import 'add_page.dart';
+import 'edit_page.dart'; // Assurez-vous d'importer EditPage
 import 'statistics_page.dart';
 import '../repositories/card_repository.dart';
 
@@ -118,6 +119,36 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                             card['name'],
                             style: const TextStyle(fontSize: 18),
                           ),
+                          onTap: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditPage(
+                                  id: card['id'],
+                                  name: card['name'],
+                                  color: card['color'],
+                                  date: card['date'],
+                                  hours: card['hours'],
+                                  frequency: card['frequency'],
+                                ),
+                              ),
+                            );
+
+                           if (result != null) {
+                              if (result['action'] == 'update') {
+                                context.read<CardBloc>().add(UpdateCardEvent(
+                                  id: result['id'],
+                                  name: result['name'],
+                                  color: result['color'],
+                                  date: result['date'],
+                                  hours: result['hours'],
+                                  frequency: result['frequency'],
+                                ));
+                              } else if (result['action'] == 'delete') {
+                                context.read<CardBloc>().add(DeleteCardEvent(id: result['id']));
+                              }
+                            }
+                          },
                         ),
                       );
                     },

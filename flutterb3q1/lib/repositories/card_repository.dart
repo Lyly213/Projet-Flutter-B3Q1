@@ -10,7 +10,7 @@ class CardRepository {
   Future<void> addCard(String name, Color color, DateTime date, String hours, String frequency) async {
     await _firestore.collection('cards').add({
       'name': name,
-      'color': '#${color.value.toRadixString(16)}',
+      'color': '#${color.value.toRadixString(16).padLeft(8, '0')}',
       'date': date.toIso8601String(),
       'hours': hours,
       'frequency': frequency,
@@ -19,18 +19,34 @@ class CardRepository {
   }
 
   Stream<List<Map<String, dynamic>>> getCards() {
-    return _firestore.collection('cards').orderBy('timestamp', descending: true).snapshots().map(
-      (snapshot) => snapshot.docs.map((doc) {
+    return _firestore.collection('cards').snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
         final data = doc.data();
         return {
           'id': doc.id,
           'name': data['name'],
-          'color': Color(int.parse(data['color'].substring(1), radix: 16)),
+          'color': Color(int.parse(data['color'].substring(1), radix: 16)), // Conversion hex -> Color
           'date': DateTime.parse(data['date']),
           'hours': data['hours'],
           'frequency': data['frequency'],
         };
-      }).toList(),
-    );
+      }).toList();
+    });
   }
+
+
+  Future<void> deleteCard(String id) async {
+      await _firestore.collection('cards').doc(id).delete();
+    }
+
+    Future<void> updateCard(String id, String name, Color color, DateTime date, String hours, String frequency) async {
+      await _firestore.collection('cards').doc(id).update({
+        'name': name,
+        'color': '#${color.value.toRadixString(16).padLeft(8, '0')}',
+        'date': date.toIso8601String(),
+        'hours': hours,
+        'frequency': frequency,
+      });
+    }
+
 }

@@ -30,5 +30,29 @@ class CardBloc extends Bloc<CardEvent, CardState> {
         emit(CardsError(e.toString()));
       }
     });
+
+    on<DeleteCardEvent>((event, emit) async {
+      try {
+        await cardRepository.deleteCard(event.id);
+      } catch (e) {
+        emit(CardsError(e.toString()));
+      }
+    });
+
+    on<UpdateCardEvent>((event, emit) async {
+      try {
+        await cardRepository.updateCard(
+          event.id,
+          event.name,
+          event.color,
+          event.date,
+          event.hours,
+          event.frequency,
+        );
+        add(LoadCardsEvent());
+      } catch (e) {
+        emit(CardsError(e.toString()));
+      }
+    });
   }
 }
