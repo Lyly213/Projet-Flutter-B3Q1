@@ -62,7 +62,7 @@ class _AddPageState extends State<AddPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.green,
+        backgroundColor: const Color.fromARGB(255, 0, 115, 35), // Vert foncé
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.white),
@@ -74,14 +74,19 @@ class _AddPageState extends State<AddPage> {
           TextButton(
             onPressed: () {
               final habitName = _habitNameController.text;
-              if(habitName.isNotEmpty && _selectedDate != null) {
-                Navigator.pop(context, {
+              if (habitName.isNotEmpty && _selectedDate != null) {
+                final cardData = {
                   'name': habitName,
                   'color': _selectedColor,
-                  'date': _selectedDate!,
+                  'date': "${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}",
                   'hours': _selectedHour ?? 'all day',
                   'frequency': _selectedFrequency ?? 'none',
-                });
+                };
+
+                print("Returning card data: $cardData");
+
+                Navigator.pop(context, cardData);
+
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Please fill all fields')),
@@ -89,7 +94,7 @@ class _AddPageState extends State<AddPage> {
               }
             },
             child: const Text(
-              'add',
+              'Add',
               style: TextStyle(color: Colors.white, fontSize: 18),
             ),
           ),
@@ -97,128 +102,139 @@ class _AddPageState extends State<AddPage> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Name habit',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextFormField(
-              controller: _habitNameController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+        child: Container(
+          color: const Color(0xFFF5F5DC),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Name habit',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 0, 115, 35), // Vert foncé
                 ),
-                filled: true,
-                fillColor: Colors.green[50],
               ),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Days',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
-              ),
-            ),
-            const SizedBox(height: 8),
-            TextFormField(
-              readOnly: true,
-              decoration: InputDecoration(
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.calendar_today, color: Colors.green),
-                  onPressed: () => _selectDate(context),
+              const SizedBox(height: 8),
+              TextFormField(
+                controller: _habitNameController,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white, // Fond blanc pour les champs
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Days',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 0, 115, 35),
                 ),
-                filled: true,
-                fillColor: Colors.green[50],
               ),
-              controller: TextEditingController(
-                text: _selectedDate != null
-                    ? "${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}"
-                    : '',
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Hours',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
-              ),
-            ),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+              const SizedBox(height: 8),
+              TextFormField(
+                readOnly: true,
+                decoration: InputDecoration(
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.calendar_today, color: Color.fromARGB(255, 0, 115, 35)),
+                    onPressed: () => _selectDate(context),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
                 ),
-                filled: true,
-                fillColor: Colors.green[50],
-              ),
-              items: const [
-                DropdownMenuItem(value: 'all day', child: Text('all day')),
-                DropdownMenuItem(value: 'morning', child: Text('morning')),
-                DropdownMenuItem(value: 'afternoon', child: Text('afternoon')),
-                DropdownMenuItem(value: 'evening', child: Text('evening')),
-              ],
-              onChanged: (value) {},
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Frequency',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
-              ),
-            ),
-            const SizedBox(height: 8),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+                controller: TextEditingController(
+                  text: _selectedDate != null
+                      ? "${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}"
+                      : '',
                 ),
-                filled: true,
-                fillColor: Colors.green[50],
               ),
-              items: const [
-                DropdownMenuItem(value: 'none', child: Text('none')),
-                DropdownMenuItem(value: 'daily', child: Text('daily')),
-                DropdownMenuItem(value: 'weekly', child: Text('weekly')),
-              ],
-              onChanged: (value) {},
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Colors',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
+              const SizedBox(height: 16),
+              const Text(
+                'Hours',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 0, 115, 35),
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildColorCircle(const Color.fromARGB(255, 255, 166, 196)),
-                _buildColorCircle(const Color.fromARGB(255, 255, 198, 141)),
-                _buildColorCircle(const Color.fromARGB(255, 201, 165, 255)),
-                _buildColorCircle(const Color.fromARGB(255, 162, 204, 255)),
-              ],
-            ),
-          ],
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                items: const [
+                  DropdownMenuItem(value: 'all day', child: Text('All Day')),
+                  DropdownMenuItem(value: 'morning', child: Text('Morning')),
+                  DropdownMenuItem(value: 'afternoon', child: Text('Afternoon')),
+                  DropdownMenuItem(value: 'evening', child: Text('Evening')),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _selectedHour = value;
+                  });
+                },
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Frequency',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 0, 115, 35),
+                ),
+              ),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<String>(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+                items: const [
+                  DropdownMenuItem(value: 'none', child: Text('None')),
+                  DropdownMenuItem(value: 'daily', child: Text('Daily')),
+                  DropdownMenuItem(value: 'weekly', child: Text('Weekly')),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _selectedFrequency = value;
+                  });
+                },
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Colors',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color.fromARGB(255, 0, 115, 35),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildColorCircle(const Color.fromARGB(255, 255, 166, 196)),
+                  _buildColorCircle(const Color.fromARGB(255, 255, 198, 141)),
+                  _buildColorCircle(const Color.fromARGB(255, 201, 165, 255)),
+                  _buildColorCircle(const Color.fromARGB(255, 162, 204, 255)),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

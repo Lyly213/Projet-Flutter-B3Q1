@@ -19,17 +19,22 @@ class CardBloc extends Bloc<CardEvent, CardState> {
 
     on<AddCardEvent>((event, emit) async {
       try {
+        print("Event received: Adding card -> ${event.name}");
         await cardRepository.addCard(
-          event.name, 
+          event.name,
           event.color,
           event.date,
           event.hours,
           event.frequency,
         );
+        print("Event processed: Card added");
+        add(LoadCardsEvent());
       } catch (e) {
+        print("Error in AddCardEvent: $e");
         emit(CardsError(e.toString()));
       }
     });
+
 
     on<DeleteCardEvent>((event, emit) async {
       try {

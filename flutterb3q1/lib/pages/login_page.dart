@@ -79,7 +79,7 @@ class _LoginFormState extends State<LoginForm> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color.fromARGB(255, 173, 255, 159),
+      color: const Color(0xFFF5F5DC),
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -96,7 +96,7 @@ class _LoginFormState extends State<LoginForm> {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Color.fromARGB(255, 0, 100, 50),
+                      color: Color(0xFF2E7D32),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -104,12 +104,16 @@ class _LoginFormState extends State<LoginForm> {
                     controller: _emailController,
                     decoration: InputDecoration(
                       labelText: 'Email',
-                      prefixIcon: const Icon(Icons.email, color: Color.fromARGB(255, 0, 100, 50)),
+                      prefixIcon: const Icon(Icons.email, color: Color(0xFF2E7D32)),
                       filled: true,
-                      fillColor: const Color.fromARGB(255, 173, 255, 159),
+                      fillColor: const Color(0xFFD7DCC2),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Color(0xFF2E7D32)),
                       ),
                     ),
                   ),
@@ -119,12 +123,16 @@ class _LoginFormState extends State<LoginForm> {
                     obscureText: true,
                     decoration: InputDecoration(
                       labelText: 'Password',
-                      prefixIcon: const Icon(Icons.lock, color: Color.fromARGB(255, 0, 100, 50)),
+                      prefixIcon: const Icon(Icons.lock, color: Color(0xFF2E7D32)),
                       filled: true,
-                      fillColor: const Color.fromARGB(255, 173, 255, 159),
+                      fillColor: const Color(0xFFD7DCC2),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Color(0xFF2E7D32)),
                       ),
                     ),
                   ),
@@ -132,7 +140,7 @@ class _LoginFormState extends State<LoginForm> {
                   ElevatedButton(
                     onPressed: () => _onLoginButtonPressed(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 0, 100, 50),
+                      backgroundColor: const Color(0xFF2E7D32),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
