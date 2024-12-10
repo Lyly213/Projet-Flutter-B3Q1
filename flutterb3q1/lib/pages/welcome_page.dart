@@ -47,8 +47,8 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 0, 115, 35),
-        title: const Text(
-          'Today',
+        title: Text(
+          _getDayTitle(),
           style: TextStyle(color: Colors.white),
         ),
       ),
@@ -124,17 +124,20 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                                   if (result != null) {
                                     if (result['action'] == 'update') {
                                       context.read<CardBloc>().add(UpdateCardEvent(
-                                            id: result['id'],
-                                            name: result['name'],
-                                            color: result['color'],
-                                            date: result['date'],
-                                            hours: result['hours'],
-                                            frequency: result['frequency'],
-                                          ));
+                                        id: result['id'],
+                                        name: result['name'],
+                                        originalName: result['originalName'],
+                                        color: result['color'],
+                                        date: result['date'],
+                                        hours: result['hours'],
+                                        frequency: result['frequency'],
+                                        originalFrequency: result['originalFrequency'],
+                                      ));
                                     } else if (result['action'] == 'delete') {
                                       context.read<CardBloc>().add(DeleteCardEvent(id: result['id']));
                                     }
                                   }
+
                                 },
                               ),
                             );
@@ -187,16 +190,19 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                   MaterialPageRoute(builder: (context) => const AddPage()),
                 );
 
-                if (result != null && result is Map<String, dynamic>) {
-                  context.read<CardBloc>().add(
-                        AddCardEvent(
-                          name: result['name'],
-                          color: result['color'],
-                          date: DateTime.parse(result['date']),
-                          hours: result['hours'],
-                          frequency: result['frequency'],
-                        ),
-                      );
+                if (result != null && result is List<Map<String, dynamic>>) {
+                  debugPrint("Received cards from AddPage: $result"); // Journal pour vérifier les données
+                  for (var card in result) {
+                    context.read<CardBloc>().add(
+                      AddCardEvent(
+                        name: card['name'],
+                        color: card['color'],
+                        date: DateTime.parse(card['date']),
+                        hours: card['hours'],
+                        frequency: card['frequency'],
+                      ),
+                    );
+                  }
                 }
               },
               tooltip: 'Go to Add Page',
@@ -208,6 +214,31 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
     );
   }
 
+  String _getDayTitle() {
+    if (_selectedDay == null) return 'Today';
+
+    final today = DateTime.now();
+    final todayDate = DateTime(today.year, today.month, today.day);
+    final selectedDate = DateTime(_selectedDay!.year, _selectedDay!.month, _selectedDay!.day);
+
+    final difference = selectedDate.difference(todayDate).inDays;
+
+    if (difference == 0) return 'Today';
+    if (difference == 1) return 'Tomorrow';
+    if (difference == -1) return 'Yesterday';
+
+    final monthNames = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    final month = monthNames[selectedDate.month - 1];
+    final day = selectedDate.day;
+    final year = selectedDate.year;
+
+    return '$month $day, $year';
+  }
+
+
+
   Widget _buildWeekCalendar() {
     final daysOfWeek = List.generate(7, (index) {
       final day = _focusedDay.add(Duration(days: index - _focusedDay.weekday + 1));
@@ -215,44 +246,67 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
     });
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: daysOfWeek.map((day) {
-        final isSelected = _selectedDay?.difference(day).inDays == 0;
-
-        return GestureDetector(
-          onTap: () {
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        IconButton(
+          icon: const Icon(Icons.arrow_left, size: 28, color: Color.fromARGB(255, 0, 115, 35)),
+          onPressed: () {
             setState(() {
-              _selectedDay = day;
+              _focusedDay = _focusedDay.subtract(const Duration(days: 7));
             });
           },
-          child: Column(
-            children: [
-              Text(
-                _getDayName(day),
-                style: TextStyle(
-                  color: isSelected
-                      ? const Color.fromARGB(255, 0, 115, 35)
-                      : Colors.black54,
-                  fontWeight: FontWeight.bold,
+        ),
+        Expanded(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: daysOfWeek.map((day) {
+              final isSelected = _selectedDay?.difference(day).inDays == 0;
+
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedDay = day;
+                  });
+                },
+                child: Column(
+                  children: [
+                    Text(
+                      _getDayName(day),
+                      style: TextStyle(
+                        color: isSelected
+                            ? const Color.fromARGB(255, 0, 115, 35)
+                            : Colors.black54,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    CircleAvatar(
+                      radius: 14,
+                      backgroundColor: isSelected
+                          ? const Color.fromARGB(255, 0, 115, 35)
+                          : Colors.grey[300],
+                      child: Text(
+                        '${day.day}',
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 8),
-              CircleAvatar(
-                radius: 14,
-                backgroundColor: isSelected
-                    ? const Color.fromARGB(255, 0, 115, 35)
-                    : Colors.grey[300],
-                child: Text(
-                  '${day.day}',
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.black,
-                  ),
-                ),
-              ),
-            ],
+              );
+            }).toList(),
           ),
-        );
-      }).toList(),
+        ),
+        IconButton(
+          icon: const Icon(Icons.arrow_right, size: 28, color: Color.fromARGB(255, 0, 115, 35)),
+          onPressed: () {
+            setState(() {
+              _focusedDay = _focusedDay.add(const Duration(days: 7));
+            });
+          },
+        ),
+      ],
     );
   }
 

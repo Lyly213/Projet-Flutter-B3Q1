@@ -19,7 +19,6 @@ class CardBloc extends Bloc<CardEvent, CardState> {
 
     on<AddCardEvent>((event, emit) async {
       try {
-        print("Event received: Adding card -> ${event.name}");
         await cardRepository.addCard(
           event.name,
           event.color,
@@ -27,14 +26,11 @@ class CardBloc extends Bloc<CardEvent, CardState> {
           event.hours,
           event.frequency,
         );
-        print("Event processed: Card added");
         add(LoadCardsEvent());
       } catch (e) {
-        print("Error in AddCardEvent: $e");
         emit(CardsError(e.toString()));
       }
     });
-
 
     on<DeleteCardEvent>((event, emit) async {
       try {
@@ -46,6 +42,59 @@ class CardBloc extends Bloc<CardEvent, CardState> {
 
     on<UpdateCardEvent>((event, emit) async {
       try {
+        final bool isNameChanged = event.name != event.originalName;
+        final bool isFrequencyChanged = event.frequency != event.originalFrequency;
+
+        if (event.frequency == 'none') {
+          await cardRepository.deleteOtherCards(event.id, event.originalName ?? event.name, event.originalFrequency);
+        
+        } else if (isFrequencyChanged) {
+          List<Map<String, dynamic>> newCards = [];
+          if (event.frequency == 'daily') {
+            for (int i = 1; i <= 6; i++) {
+              newCards.add({
+                'name': event.name,
+                'color': event.color,
+                'date': event.date.add(Duration(days: i)).toIso8601String(),
+                'hours': event.hours,
+                'frequency': event.frequency,
+              });
+            }
+          } else if (event.frequency == 'weekly') {
+            for (int i = 1; i <= 3; i++) {
+              newCards.add({
+                'name': event.name,
+                'color': event.color,
+                'date': event.date.add(Duration(days: i * 7)).toIso8601String(),
+                'hours': event.hours,
+                'frequency': event.frequency,
+              });
+            }
+          }
+      
+          await cardRepository.deleteOtherCards(event.id, event.originalName ?? event.name, event.originalFrequency);
+
+          for(var card in newCards) {
+            await cardRepository.addCard(
+              card['name'],
+              card['color'],
+              DateTime.parse(card['date']),
+              card['hours'],
+              card['frequency'],
+            );
+          }
+        } 
+        
+        if(isNameChanged && !isFrequencyChanged) {
+          await cardRepository.updateAllCardsByName(
+            event.originalName ?? event.name,
+            event.name,
+            event.color,
+            event.hours,
+            event.frequency,
+          );
+        }
+
         await cardRepository.updateCard(
           event.id,
           event.name,
@@ -54,6 +103,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
           event.hours,
           event.frequency,
         );
+
         add(LoadCardsEvent());
       } catch (e) {
         emit(CardsError(e.toString()));

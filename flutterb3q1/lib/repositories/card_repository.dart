@@ -7,31 +7,23 @@ class CardRepository {
   CardRepository({FirebaseFirestore? firestore})
       : _firestore = firestore ?? FirebaseFirestore.instance;
 
+  //new card in the database (firebase)
   Future<void> addCard(String name, Color color, DateTime date, String hours, String frequency) async {
-    try {
-      print("Adding card to firebase : $name, $color, $date, $hours, $frequency");
-      await _firestore.collection('cards').add({
-        'name': name,
-        'color': '#${color.value.toRadixString(16).padLeft(8, '0')}',
-        'date': date.toIso8601String(),
-        'hours': hours,
-        'frequency': frequency,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-      print("Card added successfully.");
-    } catch (e) {
-      print("Error adding card: $e");
-      throw Exception('Failed to add card: $e');
-    }
+    await _firestore.collection('cards').add({
+      'name': name,
+      'color': '#${color.value.toRadixString(16).padLeft(8, '0')}',
+      'date': date.toIso8601String(),
+      'hours': hours,
+      'frequency': frequency,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
   }
 
-
+  //get all cards from the database (firebase), and map them to a list of maps
   Stream<List<Map<String, dynamic>>> getCards() {
     return _firestore.collection('cards').snapshots().map((snapshot) {
-      print("Snapshot received: ${snapshot.docs.length} documents");
       return snapshot.docs.map((doc) {
         final data = doc.data();
-        print("Processing card: $data");
         return {
           'id': doc.id,
           'name': data['name'],
@@ -44,11 +36,12 @@ class CardRepository {
     });
   }
 
-
+  //delete a card base in the id
   Future<void> deleteCard(String id) async {
     await _firestore.collection('cards').doc(id).delete();
   }
 
+  //update the donnees of a card
   Future<void> updateCard(String id, String name, Color color, DateTime date, String hours, String frequency) async {
     await _firestore.collection('cards').doc(id).update({
       'name': name,
@@ -57,5 +50,37 @@ class CardRepository {
       'hours': hours,
       'frequency': frequency,
     });
+  }
+
+  //delete all cards with the same name and frequency
+  Future<void> deleteOtherCards(String id, String name, String frequency) async {
+    final querySnapshot = await _firestore
+        .collection('cards')
+        .where('name', isEqualTo: name)
+        .where('frequency', isEqualTo: frequency)
+        .get();
+
+    for (var doc in querySnapshot.docs) {
+      if (doc.id != id) {
+        await _firestore.collection('cards').doc(doc.id).delete();
+      }
+    }
+  }
+
+  //update all cards with the same name and frequency
+  Future<void> updateAllCardsByName(String originalName, String newName, Color color, String hours, String frequency) async {
+    final querySnapshot = await _firestore
+        .collection('cards')
+        .where('name', isEqualTo: originalName)
+        .get();
+
+    for (var doc in querySnapshot.docs) {
+      await _firestore.collection('cards').doc(doc.id).update({
+        'name': newName,
+        'color': '#${color.value.toRadixString(16).padLeft(8, '0')}',
+        'hours': hours,
+        'frequency': frequency,
+        });
+      }
   }
 }

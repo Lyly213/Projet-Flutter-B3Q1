@@ -58,11 +58,47 @@ class _AddPageState extends State<AddPage> {
     );
   }
 
+  List<Map<String, dynamic>> _generateCardsForFrequency() {
+    List<Map<String, dynamic>> cards = [];
+    if (_selectedFrequency == 'daily') {
+      for (int i = 0; i < 7; i++) {
+        final newDate = _selectedDate!.add(Duration(days: i));
+        cards.add({
+          'name': _habitNameController.text,
+          'color': _selectedColor,
+          'date': newDate.toIso8601String(),
+          'hours': _selectedHour ?? 'all day',
+          'frequency': _selectedFrequency,
+        });
+      }
+    } else if (_selectedFrequency == 'weekly') {
+      for (int i = 0; i < 4; i++) {
+        final newDate = _selectedDate!.add(Duration(days: i * 7));
+        cards.add({
+          'name': _habitNameController.text,
+          'color': _selectedColor,
+          'date': newDate.toIso8601String(),
+          'hours': _selectedHour ?? 'all day',
+          'frequency': _selectedFrequency,
+        });
+      }
+    } else {
+      cards.add({
+        'name': _habitNameController.text,
+        'color': _selectedColor,
+        'date': _selectedDate!.toIso8601String(),
+        'hours': _selectedHour ?? 'all day',
+        'frequency': _selectedFrequency,
+      });
+    }
+    return cards;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 0, 115, 35), // Vert foncé
+        backgroundColor: const Color.fromARGB(255, 0, 115, 35),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.white),
@@ -75,18 +111,9 @@ class _AddPageState extends State<AddPage> {
             onPressed: () {
               final habitName = _habitNameController.text;
               if (habitName.isNotEmpty && _selectedDate != null) {
-                final cardData = {
-                  'name': habitName,
-                  'color': _selectedColor,
-                  'date': "${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}",
-                  'hours': _selectedHour ?? 'all day',
-                  'frequency': _selectedFrequency ?? 'none',
-                };
-
-                print("Returning card data: $cardData");
-
-                Navigator.pop(context, cardData);
-
+                final cards = _generateCardsForFrequency();
+                debugPrint("Cards to add: $cards");
+                Navigator.pop(context, cards);
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Please fill all fields')),
@@ -112,7 +139,7 @@ class _AddPageState extends State<AddPage> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 0, 115, 35), // Vert foncé
+                  color: Color.fromARGB(255, 0, 115, 35),
                 ),
               ),
               const SizedBox(height: 8),
@@ -123,7 +150,7 @@ class _AddPageState extends State<AddPage> {
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   filled: true,
-                  fillColor: Colors.white, // Fond blanc pour les champs
+                  fillColor: Colors.white,
                 ),
               ),
               const SizedBox(height: 16),

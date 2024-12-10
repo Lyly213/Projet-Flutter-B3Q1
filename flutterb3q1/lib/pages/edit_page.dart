@@ -59,12 +59,6 @@ class _EditPageState extends State<EditPage> {
     }
   }
 
-  @override
-  void dispose() {
-    _habitNameController.dispose();
-    super.dispose();
-  }
-
   Widget _buildColorCircle(Color color) {
     return GestureDetector(
       onTap: () => _selectColor(color),
@@ -88,18 +82,56 @@ class _EditPageState extends State<EditPage> {
       'action': 'update',
       'id': widget.id,
       'name': _habitNameController.text,
+      'originalName': widget.name,
       'color': _selectedColor,
       'date': _selectedDate,
       'hours': _selectedHours,
       'frequency': _selectedFrequency,
+      'originalFrequency': widget.frequency,
     });
   }
+
+  void _handleFrequencyChange() {
+    List<Map<String, dynamic>> newCards = [];
+
+    if (_selectedFrequency == 'weekly') {
+      for (int i = 1; i <= 3; i++) {
+        final newDate = _selectedDate.add(Duration(days: i * 7));
+        newCards.add({
+          'name': _habitNameController.text,
+          'color': _selectedColor,
+          'date': newDate.toIso8601String(),
+          'hours': _selectedHours,
+          'frequency': _selectedFrequency,
+        });
+      }
+    }
+
+    Navigator.pop(context, {
+      'action': 'update',
+      'id': widget.id,
+      'name': _habitNameController.text,
+      'color': _selectedColor,
+      'date': _selectedDate,
+      'hours': _selectedHours,
+      'frequency': _selectedFrequency,
+      'originalFrequency': widget.frequency,
+      'new_cards': newCards,
+    });
+  }
+
 
   void _deleteCard() {
     Navigator.pop(context, {
       'id': widget.id,
       'action': 'delete',
     });
+  }
+
+  @override
+  void dispose() {
+    _habitNameController.dispose();
+    super.dispose();
   }
 
   @override
@@ -116,7 +148,7 @@ class _EditPageState extends State<EditPage> {
         ),
         actions: [
           TextButton(
-            onPressed: _updateCard,
+            onPressed: _handleFrequencyChange,
             child: const Text(
               'Update',
               style: TextStyle(color: Colors.white, fontSize: 18),
