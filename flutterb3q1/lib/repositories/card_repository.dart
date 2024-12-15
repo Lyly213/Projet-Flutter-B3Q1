@@ -15,6 +15,7 @@ class CardRepository {
       'date': date.toIso8601String(),
       'hours': hours,
       'frequency': frequency,
+      'isFinished': false,
       'timestamp': FieldValue.serverTimestamp(),
     });
   }
@@ -31,6 +32,7 @@ class CardRepository {
           'date': DateTime.parse(data['date']),
           'hours': data['hours'],
           'frequency': data['frequency'],
+          'isFinished': data['isFinished'],
         };
       }).toList();
     });
@@ -39,6 +41,17 @@ class CardRepository {
   //delete a card base in the id
   Future<void> deleteCard(String id) async {
     await _firestore.collection('cards').doc(id).delete();
+  }
+
+  Future<void> updateCardStatus(String id, bool isFinished) async {
+    await _firestore.collection('cards').doc(id).update({
+      'isFinished': isFinished,
+    });
+  }
+
+  Future<int> countCompletedTasks() async {
+    final querySnapshot = await _firestore.collection('cards').where('isFinished', isEqualTo: true).get();
+    return querySnapshot.docs.length;
   }
 
   //update the donnees of a card

@@ -40,6 +40,24 @@ class CardBloc extends Bloc<CardEvent, CardState> {
       }
     });
 
+    on<UpdateCardStatusEvent>((event, emit) async {
+      try {
+        await cardRepository.updateCardStatus(event.id, event.isFinished);
+        add(LoadCardsEvent());
+      } catch (e) {
+        emit(CardsError(e.toString()));
+      }
+    });
+
+    on<CountCompletedTasksEvent>((event, emit) async {
+      try {
+        final count = await cardRepository.countCompletedTasks();
+        emit(CompletedTasksCounted(count: count));
+      } catch (e) {
+        emit(CardsError(e.toString()));
+      }
+    });
+
     on<UpdateCardEvent>((event, emit) async {
       try {
         final bool isNameChanged = event.name != event.originalName;

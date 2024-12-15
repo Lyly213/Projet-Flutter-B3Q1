@@ -87,7 +87,6 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                       itemCount: filteredCards.length,
                       itemBuilder: (context, index) {
                         final card = filteredCards[index];
-                        bool isChecked = false;
                         return StatefulBuilder(
                           builder: (context, setState) {
                             return Card(
@@ -95,11 +94,15 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                               margin: const EdgeInsets.symmetric(vertical: 8),
                               child: ListTile(
                                 leading: Checkbox(
-                                  value: isChecked,
+                                  value: card['isFinished'],
                                   onChanged: (bool? value) {
                                     setState(() {
-                                      isChecked = value ?? false;
+                                      card['isFinished'] = value!;
                                     });
+                                    context.read<CardBloc>().add(UpdateCardStatusEvent(
+                                      id: card['id'],
+                                      isFinished: value ?? false,
+                                    ));
                                   },
                                 ),
                                 title: Text(
@@ -137,7 +140,6 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                                       context.read<CardBloc>().add(DeleteCardEvent(id: result['id']));
                                     }
                                   }
-
                                 },
                               ),
                             );
@@ -236,8 +238,6 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
 
     return '$month $day, $year';
   }
-
-
 
   Widget _buildWeekCalendar() {
     final daysOfWeek = List.generate(7, (index) {

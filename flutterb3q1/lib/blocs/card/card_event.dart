@@ -52,4 +52,15 @@ class DeleteCardEvent extends CardEvent {
   DeleteCardEvent({required this.id});
 }
 
+class UpdateCardStatusEvent extends CardEvent {
+  final String id;
+  final bool isFinished;
+
+  UpdateCardStatusEvent({
+    required this.id, 
+    required this.isFinished
+  });
+}
+
 class LoadCardsEvent extends CardEvent {}
+class CountCompletedTasksEvent extends CardEvent {}

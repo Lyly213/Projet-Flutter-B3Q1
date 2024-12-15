@@ -13,3 +13,9 @@ class CardsError extends CardState {
 
   CardsError(this.error);
 }
+
+class CompletedTasksCounted extends CardState {
+  final int count;
+
+  CompletedTasksCounted({required this.count});
+}
