@@ -1,43 +1,91 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:flutterb3q1/blocs/card/card_bloc.dart';
 import 'package:flutterb3q1/blocs/card/card_event.dart';
+import 'package:flutterb3q1/blocs/card/card_state.dart';
 import 'package:flutterb3q1/repositories/card_repository.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:flutterb3q1/blocs/card/card_bloc.dart';
-import 'package:flutterb3q1/blocs/card/card_state.dart';
 
-class StatisticsPage extends StatelessWidget {
+class StatisticsPage extends StatefulWidget {
   const StatisticsPage({super.key});
+
+  @override
+  _StatisticsPageState createState() => _StatisticsPageState();
+}
+
+class _StatisticsPageState extends State<StatisticsPage> {
+  late Map<DateTime, String> _dayStatus;
+  DateTime _focusedDay = DateTime.now();
+  DateTime _selectedDay = DateTime.now();
+  int completedDaysCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _dayStatus = {};
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadDayStatuses();
+    });
+  }
+
+  void _loadDayStatuses() async {
+    final cardRepository = RepositoryProvider.of<CardRepository>(context);
+    final Map<DateTime, String> statuses = {};
+    int completedDays = 0;
+
+    for (int i = 0; i < 30; i++) {
+      final day = DateTime.now().subtract(Duration(days: i));
+
+      final totalTasks = await cardRepository.countTotalTasksForDay(day);
+      final completedTasks = await cardRepository.countCompletedTasksForDay(day);
+
+      if (totalTasks == 0) {
+        statuses[day] = 'none';
+      } else if (completedTasks == totalTasks) {
+        statuses[day] = 'full';
+        completedDays++; 
+      } else {
+        statuses[day] = 'empty'; 
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        _dayStatus = statuses;
+        completedDaysCount = completedDays;
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<CardBloc>(
-      create: (context) => CardBloc(cardRepository: CardRepository())..add(CountCompletedTasksEvent()),
+      create: (context) => CardBloc(
+        cardRepository: RepositoryProvider.of<CardRepository>(context),
+      )..add(CountCompletedTasksEvent()),
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xFFF5F5DC),
+          backgroundColor: const Color(0xFFFFFCE0),
           elevation: 0,
           title: Column(
-            mainAxisSize: MainAxisSize.min,
             children: const [
               SizedBox(height: 4),
               Text(
-                'Bonjour !',
+                'Bonjour ! 😊',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 0, 115, 35),
+                  color: Color.fromARGB(255, 130, 176, 146),
                 ),
               ),
             ],
           ),
           centerTitle: true,
-          iconTheme: const IconThemeData(
-            color: Color.fromARGB(255, 0, 115, 35),
-          ),
         ),
         body: Container(
-          color: const Color(0xFFF5F5DC),
+          color: const Color(0xFFFFFCE0),
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -48,31 +96,49 @@ class StatisticsPage extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 0, 115, 35),
+                    color: Color.fromARGB(255, 130, 176, 146),
                   ),
                 ),
                 const SizedBox(height: 16),
                 TableCalendar(
                   firstDay: DateTime.utc(2020, 1, 1),
                   lastDay: DateTime.utc(2030, 12, 31),
-                  focusedDay: DateTime.now(),
-                  selectedDayPredicate: (day) => isSameDay(day, DateTime.now()),
+                  focusedDay: _focusedDay,
+                  selectedDayPredicate: (day) => isSameDay(day, _selectedDay),
                   calendarStyle: const CalendarStyle(
                     todayDecoration: BoxDecoration(
-                      color: Color.fromARGB(255, 142, 255, 148),
+                      color: Color.fromARGB(255, 163, 253, 168),
                       shape: BoxShape.circle,
                     ),
                     selectedDecoration: BoxDecoration(
-                      color: Color.fromARGB(255, 0, 115, 35),
+                      color: Color.fromARGB(255, 130, 176, 146),
                       shape: BoxShape.circle,
                     ),
                   ),
-                  headerStyle: const HeaderStyle(
-                    formatButtonVisible: false,
-                    titleCentered: true,
+                  eventLoader: (day) {
+                    if (_dayStatus.containsKey(day)) {
+                      return [_dayStatus[day]!];
+                    }
+                    return [];
+                  },
+                  calendarBuilders: CalendarBuilders(
+                    markerBuilder: (context, day, events) {
+                      if (events.isEmpty) return const SizedBox.shrink();
+                      final status = events[0];
+
+                      if (status == 'full') {
+                        return _buildCircle(Color.fromARGB(255, 130, 176, 146), filled: true); 
+                      } else if (status == 'empty') {
+                        return _buildCircle(const Color.fromARGB(255, 185, 255, 153), filled: false);
+                      }
+                      return const SizedBox.shrink();
+                    },
                   ),
                   onDaySelected: (selectedDay, focusedDay) {
-                    // Logique
+                    setState(() {
+                      _selectedDay = selectedDay;
+                      _focusedDay = focusedDay;
+                    });
                   },
                 ),
                 const SizedBox(height: 20),
@@ -81,7 +147,7 @@ class StatisticsPage extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 0, 115, 35),
+                    color: Color.fromARGB(255, 130, 176, 146),
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -92,17 +158,28 @@ class StatisticsPage extends StatelessWidget {
                       child: Container(
                         height: 100,
                         decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 142, 255, 148),
+                          color: Color.fromARGB(255, 130, 176, 146),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         alignment: Alignment.center,
-                        child: const Text(
-                          '1 day series',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: Colors.black,
-                          ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              'img/papillon.svg',
+                              width: 30,
+                              height: 30,
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              '$completedDaysCount completed days',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -111,7 +188,7 @@ class StatisticsPage extends StatelessWidget {
                       child: Container(
                         height: 100,
                         decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 142, 255, 148),
+                          color: Color.fromARGB(255, 130, 176, 146),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         alignment: Alignment.center,
@@ -120,13 +197,24 @@ class StatisticsPage extends StatelessWidget {
                             if (state is CardsLoading) {
                               return const CircularProgressIndicator();
                             } else if (state is CompletedTasksCounted) {
-                              return Text(
-                                '${state.count} completed tasks',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                  color: Colors.black,
-                                ),
+                              return Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SvgPicture.asset(
+                                    'img/trèfle.svg',
+                                    width: 30,
+                                    height: 30,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    '${state.count} completed tasks',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
                               );
                             } else if (state is CardsError) {
                               return const Text(
@@ -156,6 +244,18 @@ class StatisticsPage extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildCircle(Color color, {required bool filled}) {
+    return Container(
+      width: 10,
+      height: 10,
+      decoration: BoxDecoration(
+        color: filled ? color : Colors.transparent,
+        border: Border.all(color: color, width: 2),
+        shape: BoxShape.circle,
       ),
     );
   }

@@ -33,14 +33,14 @@ class LoginWidget extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Welcome, ${state.user.email}!'),
-              backgroundColor: Colors.green,
+              backgroundColor: Color.fromARGB(255, 130, 176, 146),
             ),
           );
         } else if (state is LoginError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.error),
-              backgroundColor: Colors.red,
+              backgroundColor: const Color.fromARGB(255, 248, 107, 97),
             ),
           );
         }
@@ -79,7 +79,7 @@ class _LoginFormState extends State<LoginForm> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFFF5F5DC),
+      color: const Color(0xFFFFFCE0),
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -96,7 +96,7 @@ class _LoginFormState extends State<LoginForm> {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF2E7D32),
+                      color: Color.fromARGB(255, 130, 176, 146),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -104,7 +104,7 @@ class _LoginFormState extends State<LoginForm> {
                     controller: _emailController,
                     decoration: InputDecoration(
                       labelText: 'Email',
-                      prefixIcon: const Icon(Icons.email, color: Color(0xFF2E7D32)),
+                      prefixIcon: const Icon(Icons.email, color: Color.fromARGB(255, 130, 176, 146)),
                       filled: true,
                       fillColor: const Color(0xFFD7DCC2),
                       border: OutlineInputBorder(
@@ -113,7 +113,7 @@ class _LoginFormState extends State<LoginForm> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Color(0xFF2E7D32)),
+                        borderSide: BorderSide(color: Color.fromARGB(255, 130, 176, 146)),
                       ),
                     ),
                   ),
@@ -123,7 +123,7 @@ class _LoginFormState extends State<LoginForm> {
                     obscureText: true,
                     decoration: InputDecoration(
                       labelText: 'Password',
-                      prefixIcon: const Icon(Icons.lock, color: Color(0xFF2E7D32)),
+                      prefixIcon: const Icon(Icons.lock, color: Color.fromARGB(255, 130, 176, 146)),
                       filled: true,
                       fillColor: const Color(0xFFD7DCC2),
                       border: OutlineInputBorder(
@@ -132,7 +132,7 @@ class _LoginFormState extends State<LoginForm> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: Color(0xFF2E7D32)),
+                        borderSide: BorderSide(color: Color.fromARGB(255, 130, 176, 146)),
                       ),
                     ),
                   ),
@@ -140,7 +140,7 @@ class _LoginFormState extends State<LoginForm> {
                   ElevatedButton(
                     onPressed: () => _onLoginButtonPressed(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2E7D32),
+                      backgroundColor: const Color.fromARGB(255, 130, 176, 146),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

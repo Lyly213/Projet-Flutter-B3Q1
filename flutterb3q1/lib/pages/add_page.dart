@@ -8,7 +8,7 @@ class AddPage extends StatefulWidget {
 }
 
 class _AddPageState extends State<AddPage> {
-  Color _selectedColor = const Color.fromARGB(255, 255, 227, 125);
+  Color _selectedColor = const Color(0xFFFFFCE0);
   DateTime? _selectedDate;
   String? _selectedHour;
   String? _selectedFrequency;
@@ -98,7 +98,7 @@ class _AddPageState extends State<AddPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 0, 115, 35),
+        backgroundColor: const Color.fromARGB(255, 130, 176, 146),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.white),
@@ -122,7 +122,7 @@ class _AddPageState extends State<AddPage> {
             },
             child: const Text(
               'Add',
-              style: TextStyle(color: Colors.white, fontSize: 18),
+              style: TextStyle(color: Color(0xFFFFFCE0), fontSize: 18),
             ),
           ),
         ],
@@ -130,7 +130,7 @@ class _AddPageState extends State<AddPage> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Container(
-          color: const Color(0xFFF5F5DC),
+          color: Color(0xFFFFFCE0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -139,7 +139,7 @@ class _AddPageState extends State<AddPage> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 0, 115, 35),
+                  color: Color.fromARGB(255, 130, 176, 146),
                 ),
               ),
               const SizedBox(height: 8),
@@ -159,7 +159,7 @@ class _AddPageState extends State<AddPage> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 0, 115, 35),
+                  color: Color.fromARGB(255, 130, 176, 146),
                 ),
               ),
               const SizedBox(height: 8),
@@ -167,7 +167,7 @@ class _AddPageState extends State<AddPage> {
                 readOnly: true,
                 decoration: InputDecoration(
                   suffixIcon: IconButton(
-                    icon: const Icon(Icons.calendar_today, color: Color.fromARGB(255, 0, 115, 35)),
+                    icon: const Icon(Icons.calendar_today, color: Color.fromARGB(255, 130, 176, 146)),
                     onPressed: () => _selectDate(context),
                   ),
                   border: OutlineInputBorder(
@@ -188,7 +188,7 @@ class _AddPageState extends State<AddPage> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 0, 115, 35),
+                  color: Color.fromARGB(255, 130, 176, 146),
                 ),
               ),
               const SizedBox(height: 8),
@@ -218,7 +218,7 @@ class _AddPageState extends State<AddPage> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 0, 115, 35),
+                  color: Color.fromARGB(255, 130, 176, 146),
                 ),
               ),
               const SizedBox(height: 8),
@@ -247,17 +247,17 @@ class _AddPageState extends State<AddPage> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Color.fromARGB(255, 0, 115, 35),
+                  color: Color.fromARGB(255, 130, 176, 146),
                 ),
               ),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildColorCircle(const Color.fromARGB(255, 255, 166, 196)),
-                  _buildColorCircle(const Color.fromARGB(255, 255, 198, 141)),
-                  _buildColorCircle(const Color.fromARGB(255, 201, 165, 255)),
-                  _buildColorCircle(const Color.fromARGB(255, 162, 204, 255)),
+                  _buildColorCircle(const Color.fromARGB(255, 253, 196, 215)),
+                  _buildColorCircle(const Color.fromARGB(255, 253, 221, 190)),
+                  _buildColorCircle(const Color.fromARGB(255, 221, 202, 250)),
+                  _buildColorCircle(const Color.fromARGB(255, 187, 214, 248)),
                 ],
               ),
             ],

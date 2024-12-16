@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'repositories/user_repository.dart';
 import 'pages/login_page.dart';
 import 'pages/welcome_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'repositories/card_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,7 +13,12 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   final userRepository = UserRepository();
-  runApp(MyApp(userRepository: userRepository));
+  runApp(
+    RepositoryProvider(
+      create: (context) => CardRepository(),
+      child: MyApp(userRepository: userRepository),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -24,8 +31,8 @@ class MyApp extends StatelessWidget {
       title: 'Habit Tracker',
       theme: ThemeData(
         primaryColor: const Color(0xFF6B8E23),
-        scaffoldBackgroundColor: const Color.fromARGB(255, 251, 242, 218),
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 173, 255, 159)),
+        scaffoldBackgroundColor: const Color(0xFFFFFCE0),
+        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 130, 176, 146)),
         useMaterial3: true,
       ),
       initialRoute: userRepository.currentUser != null ? '/home' : '/login',

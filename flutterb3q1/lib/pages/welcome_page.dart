@@ -35,7 +35,9 @@ class MyHomePageContent extends StatefulWidget {
 class _MyHomePageContentState extends State<MyHomePageContent> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  // ignore: unused_field
   int _completedTasksCount = 0;
+  // ignore: unused_field
   int _totalTasksCount = 0;
 
   @override
@@ -59,14 +61,18 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 0, 115, 35),
+        backgroundColor: const Color.fromARGB(255, 130, 176, 146),
         title: Text(
           _getDayTitle(),
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: const Color.fromARGB(255, 255, 255, 255),
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            ),
         ),
       ),
       body: Container(
-        color: const Color(0xFFF5F5DC),
+        color: const Color(0xFFFFFCE0),
         child: Column(
           children: [
             Container(
@@ -103,12 +109,12 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                         return StatefulBuilder(
                           builder: (context, setState) {
                             return Card(
-                              color: card['color'],
+                              color: card['color'] ?? const Color.fromARGB(255, 130, 176, 146),
                               margin: const EdgeInsets.symmetric(vertical: 8),
                               child: ListTile(
                                 leading: Checkbox(
-                                  tristate: true,//Pour dire que le checkbox peut être null
-                                  value: card['isFinished'] ?? false,//la mettre à false si elle est null
+                                  tristate: true, // Pour dire que le checkbox peut être null
+                                  value: card['isFinished'] ?? false, // la mettre à false si elle est null
                                   onChanged: (bool? value) {
                                     setState(() {
                                       card['isFinished'] = value ?? false;
@@ -128,6 +134,12 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                                         : TextDecoration.none,
                                   ),
                                 ),
+                                subtitle: card['hours'] != null
+                                    ? Text(
+                                        card['hours'],
+                                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                                      )
+                                    : null,
                                 onTap: () async {
                                   final result = await Navigator.push(
                                     context,
@@ -157,9 +169,6 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                                       ));
                                     } else if (result['action'] == 'delete') {
                                       context.read<CardBloc>().add(DeleteCardEvent(id: result['id'], originalName: result['originalName'], originalFrequency: result['originalFrequency']));
-                                      print('orignalName: ${result['originalName']}');
-                                      print('orignalFrequency: ${result['originalFrequency']}');
-                                      print(result);
                                     }
                                   }
                                 },
@@ -187,7 +196,7 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
             padding: const EdgeInsets.only(left: 30),
             child: FloatingActionButton(
               heroTag: "statisticsPageBtn",
-              backgroundColor: const Color.fromARGB(255, 0, 115, 35),
+              backgroundColor: const Color.fromARGB(255, 130, 176, 146),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -207,7 +216,7 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
             padding: const EdgeInsets.only(right: 30),
             child: FloatingActionButton(
               heroTag: "addPageBtn",
-              backgroundColor: const Color.fromARGB(255, 0, 115, 35),
+              backgroundColor: const Color.fromARGB(255, 130, 176, 146),
               onPressed: () async {
                 final result = await Navigator.push(
                   context,
@@ -270,7 +279,7 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         IconButton(
-          icon: const Icon(Icons.arrow_left, size: 28, color: Color.fromARGB(255, 0, 115, 35)),
+          icon: const Icon(Icons.arrow_left, size: 28, color: Color.fromARGB(255, 130, 176, 146)),
           onPressed: () {
             setState(() {
               _focusedDay = _focusedDay.subtract(const Duration(days: 7));
@@ -283,8 +292,6 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: daysOfWeek.map((day) {
               final isSelected = _selectedDay?.difference(day).inDays == 0;
-              final opacity = isSelected && _totalTasksCount > 0 ? double.parse((0.1+(_completedTasksCount / _totalTasksCount)*(1+0.1)).toStringAsFixed(1)): 1.0;
-              print((opacity).toStringAsFixed(1));
 
               return GestureDetector(
                 onTap: () {
@@ -299,7 +306,7 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                       _getDayName(day),
                       style: TextStyle(
                         color: isSelected
-                            ? const Color.fromARGB(255, 0, 115, 35)
+                            ? const Color.fromARGB(255, 130, 176, 146)
                             : Colors.black54,
                         fontWeight: FontWeight.bold,
                       ),
@@ -308,7 +315,7 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                     CircleAvatar(
                       radius: 14,
                       backgroundColor: isSelected
-                          ? const Color.fromARGB(255, 0, 115, 35).withOpacity(opacity)
+                          ? const Color.fromARGB(255, 130, 176, 146)
                           : Colors.grey[300],
                       child: Text(
                         '${day.day}',
@@ -324,7 +331,7 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
           ),
         ),
         IconButton(
-          icon: const Icon(Icons.arrow_right, size: 28, color: Color.fromARGB(255, 0, 115, 35)),
+          icon: const Icon(Icons.arrow_right, size: 28, color: Color(0xFFA6CDB6)),
           onPressed: () {
             setState(() {
               _focusedDay = _focusedDay.add(const Duration(days: 7));
