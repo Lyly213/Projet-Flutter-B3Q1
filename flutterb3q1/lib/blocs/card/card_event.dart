@@ -48,8 +48,15 @@ class UpdateCardEvent extends CardEvent {
 
 class DeleteCardEvent extends CardEvent {
   final String id;
+  final String originalName;
+  final String originalFrequency;
 
-  DeleteCardEvent({required this.id});
+  DeleteCardEvent({
+    required this.id,
+    required this.originalName,
+    required this.originalFrequency,
+    });
+
 }
 
 class UpdateCardStatusEvent extends CardEvent {

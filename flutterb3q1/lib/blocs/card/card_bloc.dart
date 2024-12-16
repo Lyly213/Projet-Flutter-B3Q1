@@ -34,7 +34,8 @@ class CardBloc extends Bloc<CardEvent, CardState> {
 
     on<DeleteCardEvent>((event, emit) async {
       try {
-        await cardRepository.deleteCard(event.id);
+          await cardRepository.deleteCard(event.id);
+          await cardRepository.deleteOtherCards(event.id, event.originalName, event.originalFrequency);
       } catch (e) {
         emit(CardsError(e.toString()));
       }
@@ -103,7 +104,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
           }
         } 
         
-        if(isNameChanged && !isFrequencyChanged) {
+        if(isNameChanged) {
           await cardRepository.updateAllCardsByName(
             event.originalName ?? event.name,
             event.name,

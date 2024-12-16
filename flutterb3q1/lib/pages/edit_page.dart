@@ -125,6 +125,8 @@ class _EditPageState extends State<EditPage> {
     Navigator.pop(context, {
       'id': widget.id,
       'action': 'delete',
+      'originalName': widget.name,
+      'originalFrequency': widget.frequency,
     });
   }
 

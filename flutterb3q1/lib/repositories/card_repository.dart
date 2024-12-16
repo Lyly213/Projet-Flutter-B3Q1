@@ -54,6 +54,27 @@ class CardRepository {
     return querySnapshot.docs.length;
   }
 
+  Future<int> countCompletedTasksForDay(DateTime day) async {
+    final startOfDay = DateTime(day.year, day.month, day.day);
+    final endOfDay = startOfDay.add(Duration(days: 1));
+    final querySnapshot = await _firestore.collection('cards')
+      .where('isFinished', isEqualTo: true)
+      .where('date', isGreaterThanOrEqualTo: startOfDay.toIso8601String())
+      .where('date', isLessThan: endOfDay.toIso8601String())
+      .get();
+    return querySnapshot.docs.length;
+  }
+
+  Future<int> countTotalTasksForDay(DateTime day) async {
+    final startOfDay = DateTime(day.year, day.month, day.day);
+    final endOfDay = startOfDay.add(Duration(days: 1));
+    final querySnapshot = await _firestore.collection('cards')
+      .where('date', isGreaterThanOrEqualTo: startOfDay.toIso8601String())
+      .where('date', isLessThan: endOfDay.toIso8601String())
+      .get();
+    return querySnapshot.docs.length;
+  }
+
   //update the donnees of a card
   Future<void> updateCard(String id, String name, Color color, DateTime date, String hours, String frequency) async {
     await _firestore.collection('cards').doc(id).update({

@@ -35,11 +35,24 @@ class MyHomePageContent extends StatefulWidget {
 class _MyHomePageContentState extends State<MyHomePageContent> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  int _completedTasksCount = 0;
+  int _totalTasksCount = 0;
 
   @override
   void initState() {
     super.initState();
     _selectedDay = _focusedDay;
+    _updateCompletedTasksCount(_selectedDay!);
+  }
+
+  void _updateCompletedTasksCount(DateTime day) async {
+    final cardRepository = RepositoryProvider.of<CardRepository>(context);
+    final count = await cardRepository.countCompletedTasksForDay(day);
+    final total = await cardRepository.countTotalTasksForDay(day);
+    setState(() {
+      _completedTasksCount = count;
+      _totalTasksCount = total;
+    });
   }
 
   @override
@@ -94,10 +107,11 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                               margin: const EdgeInsets.symmetric(vertical: 8),
                               child: ListTile(
                                 leading: Checkbox(
-                                  value: card['isFinished'],
+                                  tristate: true,//Pour dire que le checkbox peut être null
+                                  value: card['isFinished'] ?? false,//la mettre à false si elle est null
                                   onChanged: (bool? value) {
                                     setState(() {
-                                      card['isFinished'] = value!;
+                                      card['isFinished'] = value ?? false;
                                     });
                                     context.read<CardBloc>().add(UpdateCardStatusEvent(
                                       id: card['id'],
@@ -107,7 +121,12 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                                 ),
                                 title: Text(
                                   card['name'],
-                                  style: const TextStyle(fontSize: 18),
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    decoration: card['isFinished'] == true
+                                        ? TextDecoration.lineThrough
+                                        : TextDecoration.none,
+                                  ),
                                 ),
                                 onTap: () async {
                                   final result = await Navigator.push(
@@ -137,7 +156,10 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                                         originalFrequency: result['originalFrequency'],
                                       ));
                                     } else if (result['action'] == 'delete') {
-                                      context.read<CardBloc>().add(DeleteCardEvent(id: result['id']));
+                                      context.read<CardBloc>().add(DeleteCardEvent(id: result['id'], originalName: result['originalName'], originalFrequency: result['originalFrequency']));
+                                      print('orignalName: ${result['originalName']}');
+                                      print('orignalFrequency: ${result['originalFrequency']}');
+                                      print(result);
                                     }
                                   }
                                 },
@@ -193,7 +215,6 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                 );
 
                 if (result != null && result is List<Map<String, dynamic>>) {
-                  debugPrint("Received cards from AddPage: $result"); // Journal pour vérifier les données
                   for (var card in result) {
                     context.read<CardBloc>().add(
                       AddCardEvent(
@@ -253,6 +274,7 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
           onPressed: () {
             setState(() {
               _focusedDay = _focusedDay.subtract(const Duration(days: 7));
+              _updateCompletedTasksCount(_focusedDay);
             });
           },
         ),
@@ -261,11 +283,14 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: daysOfWeek.map((day) {
               final isSelected = _selectedDay?.difference(day).inDays == 0;
+              final opacity = isSelected && _totalTasksCount > 0 ? double.parse((0.1+(_completedTasksCount / _totalTasksCount)*(1+0.1)).toStringAsFixed(1)): 1.0;
+              print((opacity).toStringAsFixed(1));
 
               return GestureDetector(
                 onTap: () {
                   setState(() {
                     _selectedDay = day;
+                    _updateCompletedTasksCount(day);
                   });
                 },
                 child: Column(
@@ -283,7 +308,7 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                     CircleAvatar(
                       radius: 14,
                       backgroundColor: isSelected
-                          ? const Color.fromARGB(255, 0, 115, 35)
+                          ? const Color.fromARGB(255, 0, 115, 35).withOpacity(opacity)
                           : Colors.grey[300],
                       child: Text(
                         '${day.day}',
@@ -303,6 +328,7 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
           onPressed: () {
             setState(() {
               _focusedDay = _focusedDay.add(const Duration(days: 7));
+              _updateCompletedTasksCount(_focusedDay);
             });
           },
         ),
