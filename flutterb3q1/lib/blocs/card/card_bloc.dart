@@ -10,7 +10,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
     on<LoadCardsEvent>((event, emit) async {
       emit(CardsLoading());
       try {
-        final cardStream = cardRepository.getCards();
+        final cardStream = cardRepository.getCards(event.userId);
         await emit.forEach(cardStream, onData: (cards) => CardsLoaded(cards));
       } catch (e) {
         emit(CardsError(e.toString()));
@@ -20,13 +20,14 @@ class CardBloc extends Bloc<CardEvent, CardState> {
     on<AddCardEvent>((event, emit) async {
       try {
         await cardRepository.addCard(
+          event.userId,
           event.name,
           event.color,
           event.date,
           event.hours,
           event.frequency,
         );
-        add(LoadCardsEvent());
+        add(LoadCardsEvent(userId: event.userId));
       } catch (e) {
         emit(CardsError(e.toString()));
       }
@@ -34,8 +35,9 @@ class CardBloc extends Bloc<CardEvent, CardState> {
 
     on<DeleteCardEvent>((event, emit) async {
       try {
-          await cardRepository.deleteCard(event.id);
-          await cardRepository.deleteOtherCards(event.id, event.originalName, event.originalFrequency);
+          await cardRepository.deleteCard(event.userId, event.id);
+          await cardRepository.deleteOtherCards(event.userId, event.id, event.originalName, event.originalFrequency);
+          add(LoadCardsEvent(userId: event.userId));
       } catch (e) {
         emit(CardsError(e.toString()));
       }
@@ -43,8 +45,8 @@ class CardBloc extends Bloc<CardEvent, CardState> {
 
     on<UpdateCardStatusEvent>((event, emit) async {
       try {
-        await cardRepository.updateCardStatus(event.id, event.isFinished);
-        add(LoadCardsEvent());
+        await cardRepository.updateCardStatus(event.userId, event.id, event.isFinished);
+        add(LoadCardsEvent(userId: event.userId));
       } catch (e) {
         emit(CardsError(e.toString()));
       }
@@ -52,7 +54,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
 
     on<CountCompletedTasksEvent>((event, emit) async {
       try {
-        final count = await cardRepository.countCompletedTasks();
+        final count = await cardRepository.countCompletedTasks(event.userId);
         emit(CompletedTasksCounted(count: count));
       } catch (e) {
         emit(CardsError(e.toString()));
@@ -65,7 +67,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
         final bool isFrequencyChanged = event.frequency != event.originalFrequency;
 
         if (event.frequency == 'none') {
-          await cardRepository.deleteOtherCards(event.id, event.originalName ?? event.name, event.originalFrequency);
+          await cardRepository.deleteOtherCards(event.userId, event.id, event.originalName ?? event.name, event.originalFrequency);
         
         } else if (isFrequencyChanged) {
           List<Map<String, dynamic>> newCards = [];
@@ -91,10 +93,11 @@ class CardBloc extends Bloc<CardEvent, CardState> {
             }
           }
       
-          await cardRepository.deleteOtherCards(event.id, event.originalName ?? event.name, event.originalFrequency);
+          await cardRepository.deleteOtherCards(event.userId, event.id, event.originalName ?? event.name, event.originalFrequency);
 
           for(var card in newCards) {
             await cardRepository.addCard(
+              event.userId,
               card['name'],
               card['color'],
               DateTime.parse(card['date']),
@@ -106,6 +109,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
         
         if(isNameChanged) {
           await cardRepository.updateAllCardsByName(
+            event.userId,
             event.originalName ?? event.name,
             event.name,
             event.color,
@@ -115,6 +119,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
         }
 
         await cardRepository.updateCard(
+          event.userId,
           event.id,
           event.name,
           event.color,
@@ -123,7 +128,7 @@ class CardBloc extends Bloc<CardEvent, CardState> {
           event.frequency,
         );
 
-        add(LoadCardsEvent());
+        add(LoadCardsEvent(userId: event.userId));
       } catch (e) {
         emit(CardsError(e.toString()));
       }

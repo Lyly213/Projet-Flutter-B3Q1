@@ -6,6 +6,7 @@ import 'pages/login_page.dart';
 import 'pages/welcome_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'repositories/card_repository.dart';
+import 'pages/signup_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,7 +39,11 @@ class MyApp extends StatelessWidget {
       initialRoute: userRepository.currentUser != null ? '/home' : '/login',
       routes: {
         '/login': (context) => LoginPage(userRepository: userRepository),
-        '/home': (context) => const MyHomePage(title: 'Home'),
+        '/home': (context) {
+          final userId = userRepository.currentUser?.uid ?? '';
+          return MyHomePage(title: 'Home', userId: userId);
+        },
+        '/signup': (context) => SignUpPage(userRepository: userRepository),
       },
       debugShowCheckedModeBanner: false,
     );

@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 
 abstract class CardEvent {}
 
+class LoadCardsEvent extends CardEvent {
+  final String userId;
+
+  LoadCardsEvent({required this.userId});
+}
+
 class AddCardEvent extends CardEvent {
+  final String userId;
   final String name;
   final Color color;
   final DateTime date;
@@ -10,6 +17,7 @@ class AddCardEvent extends CardEvent {
   final String frequency;
 
   AddCardEvent({
+    required this.userId,
     required this.name, 
     required this.color,
     required this.date,
@@ -25,6 +33,7 @@ class AddCardsEvent extends CardEvent {
 }
 
 class UpdateCardEvent extends CardEvent {
+  final String userId;
   final String id;
   final String name;
   final String? originalName;
@@ -35,6 +44,7 @@ class UpdateCardEvent extends CardEvent {
   final String originalFrequency;
 
   UpdateCardEvent({
+    required this.userId,
     required this.id,
     required this.name,
     this.originalName,
@@ -46,12 +56,20 @@ class UpdateCardEvent extends CardEvent {
   });
 }
 
+class CountCompletedTasksEvent extends CardEvent {
+  final String userId;
+
+  CountCompletedTasksEvent({required this.userId});
+}
+
 class DeleteCardEvent extends CardEvent {
+  final String userId;
   final String id;
   final String originalName;
   final String originalFrequency;
 
   DeleteCardEvent({
+    required this.userId,
     required this.id,
     required this.originalName,
     required this.originalFrequency,
@@ -60,14 +78,13 @@ class DeleteCardEvent extends CardEvent {
 }
 
 class UpdateCardStatusEvent extends CardEvent {
+  final String userId;
   final String id;
   final bool isFinished;
 
   UpdateCardStatusEvent({
+    required this.userId,
     required this.id, 
     required this.isFinished
   });
 }
-
-class LoadCardsEvent extends CardEvent {}
-class CountCompletedTasksEvent extends CardEvent {}

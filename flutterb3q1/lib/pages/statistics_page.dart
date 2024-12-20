@@ -8,7 +8,9 @@ import 'package:flutterb3q1/repositories/card_repository.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class StatisticsPage extends StatefulWidget {
-  const StatisticsPage({super.key});
+  final String userId;
+
+  const StatisticsPage({super.key, required this.userId});
 
   @override
   _StatisticsPageState createState() => _StatisticsPageState();
@@ -19,11 +21,14 @@ class _StatisticsPageState extends State<StatisticsPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
   int completedDaysCount = 0;
+  
+  late String userId;
 
   @override
   void initState() {
     super.initState();
     _dayStatus = {};
+    userId = widget.userId;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadDayStatuses();
     });
@@ -37,8 +42,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
     for (int i = 0; i < 30; i++) {
       final day = DateTime.now().subtract(Duration(days: i));
 
-      final totalTasks = await cardRepository.countTotalTasksForDay(day);
-      final completedTasks = await cardRepository.countCompletedTasksForDay(day);
+      final totalTasks = await cardRepository.countTotalTasksForDay(userId, day);
+      final completedTasks = await cardRepository.countCompletedTasksForDay(userId, day);
 
       if (totalTasks == 0) {
         statuses[day] = 'none';
@@ -64,7 +69,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     return BlocProvider<CardBloc>(
       create: (context) => CardBloc(
         cardRepository: RepositoryProvider.of<CardRepository>(context),
-      )..add(CountCompletedTasksEvent()),
+      )..add(CountCompletedTasksEvent(userId: userId)),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: const Color(0xFFFFFCE0),
@@ -73,7 +78,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
             children: const [
               SizedBox(height: 4),
               Text(
-                'Bonjour ! 😊',
+                'Hello ! 😊',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,

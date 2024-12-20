@@ -10,23 +10,25 @@ import 'statistics_page.dart';
 import '../repositories/card_repository.dart';
 
 class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key, required this.title});
-
+  final String userId;
   final String title;
+
+  const MyHomePage({super.key, required this.title, required this.userId});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => CardBloc(cardRepository: CardRepository())..add(LoadCardsEvent()),
-      child: MyHomePageContent(title: title),
+      create: (context) => CardBloc(cardRepository: CardRepository())..add(LoadCardsEvent(userId: userId)),
+      child: MyHomePageContent(title: title, userId: userId),
     );
   }
 }
 
 class MyHomePageContent extends StatefulWidget {
-  const MyHomePageContent({super.key, required this.title});
+  const MyHomePageContent({super.key, required this.title, required this.userId});
 
   final String title;
+  final String userId;
 
   @override
   State<MyHomePageContent> createState() => _MyHomePageContentState();
@@ -44,13 +46,13 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
   void initState() {
     super.initState();
     _selectedDay = _focusedDay;
-    _updateCompletedTasksCount(_selectedDay!);
+    _updateCompletedTasksCount(widget.userId, _selectedDay!);
   }
 
-  void _updateCompletedTasksCount(DateTime day) async {
+  void _updateCompletedTasksCount(String userId, DateTime day) async {
     final cardRepository = RepositoryProvider.of<CardRepository>(context);
-    final count = await cardRepository.countCompletedTasksForDay(day);
-    final total = await cardRepository.countTotalTasksForDay(day);
+    final count = await cardRepository.countCompletedTasksForDay(userId, day);
+    final total = await cardRepository.countTotalTasksForDay(userId, day);
     setState(() {
       _completedTasksCount = count;
       _totalTasksCount = total;
@@ -120,6 +122,7 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                                       card['isFinished'] = value ?? false;
                                     });
                                     context.read<CardBloc>().add(UpdateCardStatusEvent(
+                                      userId: widget.userId,
                                       id: card['id'],
                                       isFinished: value ?? false,
                                     ));
@@ -158,6 +161,7 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                                   if (result != null) {
                                     if (result['action'] == 'update') {
                                       context.read<CardBloc>().add(UpdateCardEvent(
+                                        userId: widget.userId,
                                         id: result['id'],
                                         name: result['name'],
                                         originalName: result['originalName'],
@@ -168,7 +172,7 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                                         originalFrequency: result['originalFrequency'],
                                       ));
                                     } else if (result['action'] == 'delete') {
-                                      context.read<CardBloc>().add(DeleteCardEvent(id: result['id'], originalName: result['originalName'], originalFrequency: result['originalFrequency']));
+                                      context.read<CardBloc>().add(DeleteCardEvent(userId: widget.userId, id: result['id'], originalName: result['originalName'], originalFrequency: result['originalFrequency']));
                                     }
                                   }
                                 },
@@ -200,7 +204,7 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const StatisticsPage()),
+                  MaterialPageRoute(builder: (context) => StatisticsPage(userId: widget.userId)),
                 );
               },
               tooltip: 'Go to Statistics Page',
@@ -227,6 +231,7 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                   for (var card in result) {
                     context.read<CardBloc>().add(
                       AddCardEvent(
+                        userId: widget.userId,
                         name: card['name'],
                         color: card['color'],
                         date: DateTime.parse(card['date']),
@@ -283,7 +288,7 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
           onPressed: () {
             setState(() {
               _focusedDay = _focusedDay.subtract(const Duration(days: 7));
-              _updateCompletedTasksCount(_focusedDay);
+              _updateCompletedTasksCount(widget.userId, _focusedDay);
             });
           },
         ),
@@ -297,7 +302,7 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                 onTap: () {
                   setState(() {
                     _selectedDay = day;
-                    _updateCompletedTasksCount(day);
+                    _updateCompletedTasksCount(widget.userId, day);
                   });
                 },
                 child: Column(
@@ -335,7 +340,7 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
           onPressed: () {
             setState(() {
               _focusedDay = _focusedDay.add(const Duration(days: 7));
-              _updateCompletedTasksCount(_focusedDay);
+              _updateCompletedTasksCount(widget.userId, _focusedDay);
             });
           },
         ),

@@ -76,6 +76,10 @@ class _LoginFormState extends State<LoginForm> {
     ));
   }
 
+  void _onSignUpButtonPressed(BuildContext context) {
+    Navigator.pushNamed(context, '/signup');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -92,7 +96,7 @@ class _LoginFormState extends State<LoginForm> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
-                    'Connexion',
+                    'Connection',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -137,23 +141,47 @@ class _LoginFormState extends State<LoginForm> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () => _onLoginButtonPressed(context),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 130, 176, 146),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      // Inverser les boutons, en mettant Sign Up en premier
+                      TextButton(
+                        onPressed: () => _onSignUpButtonPressed(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 130, 176, 146),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 40),
+                        ),
+                        child: const Text(
+                          'Sign Up',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 50),
-                    ),
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                      ElevatedButton(
+                        onPressed: () => _onLoginButtonPressed(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 130, 176, 146),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 40),
+                        ),
+                        child: const Text(
+                          'Login',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ],
               ),
