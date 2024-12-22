@@ -144,7 +144,6 @@ class _LoginFormState extends State<LoginForm> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      // Inverser les boutons, en mettant Sign Up en premier
                       TextButton(
                         onPressed: () => _onSignUpButtonPressed(context),
                         style: ElevatedButton.styleFrom(

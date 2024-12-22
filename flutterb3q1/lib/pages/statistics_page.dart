@@ -6,6 +6,8 @@ import 'package:flutterb3q1/blocs/card/card_event.dart';
 import 'package:flutterb3q1/blocs/card/card_state.dart';
 import 'package:flutterb3q1/repositories/card_repository.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class StatisticsPage extends StatefulWidget {
   final String userId;
@@ -21,20 +23,38 @@ class _StatisticsPageState extends State<StatisticsPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
   int completedDaysCount = 0;
+  bool isLoadingCompletedDays = true;
   
   late String userId;
+  String userEmail = '';
 
   @override
   void initState() {
     super.initState();
     _dayStatus = {};
     userId = widget.userId;
+
+    final User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      userEmail = user.email ?? 'Utilisateur';
+    } else {
+      userEmail = 'Utilisateur non connecté';
+    }
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadDayStatuses();
     });
   }
 
+  Future<String> _fetchUserNameFromFirebase(String userId) async {
+    return userId;
+  }
+
   void _loadDayStatuses() async {
+    setState(() {
+      isLoadingCompletedDays = true;
+    });
+
     final cardRepository = RepositoryProvider.of<CardRepository>(context);
     final Map<DateTime, String> statuses = {};
     int completedDays = 0;
@@ -49,9 +69,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
         statuses[day] = 'none';
       } else if (completedTasks == totalTasks) {
         statuses[day] = 'full';
-        completedDays++; 
+        completedDays++;
       } else {
-        statuses[day] = 'empty'; 
+        statuses[day] = 'empty';
       }
     }
 
@@ -59,10 +79,10 @@ class _StatisticsPageState extends State<StatisticsPage> {
       setState(() {
         _dayStatus = statuses;
         completedDaysCount = completedDays;
+        isLoadingCompletedDays = false;
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -75,11 +95,11 @@ class _StatisticsPageState extends State<StatisticsPage> {
           backgroundColor: const Color(0xFFFFFCE0),
           elevation: 0,
           title: Column(
-            children: const [
-              SizedBox(height: 4),
+            children: [
+              const SizedBox(height: 4),
               Text(
-                'Hello ! 😊',
-                style: TextStyle(
+                'Bonjour $userEmail 😊',
+                style: const TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                   color: Color.fromARGB(255, 130, 176, 146),
@@ -132,7 +152,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                       final status = events[0];
 
                       if (status == 'full') {
-                        return _buildCircle(Color.fromARGB(255, 130, 176, 146), filled: true); 
+                        return _buildCircle(Color.fromARGB(255, 130, 176, 146), filled: true);
                       } else if (status == 'empty') {
                         return _buildCircle(const Color.fromARGB(255, 185, 255, 153), filled: false);
                       }
@@ -167,25 +187,27 @@ class _StatisticsPageState extends State<StatisticsPage> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         alignment: Alignment.center,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SvgPicture.asset(
-                              'img/papillon.svg',
-                              width: 30,
-                              height: 30,
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              '$completedDaysCount completed days',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Colors.black,
+                        child: isLoadingCompletedDays
+                            ? const CircularProgressIndicator()
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SvgPicture.asset(
+                                    'img/papillon.svg',
+                                    width: 30,
+                                    height: 30,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    '$completedDaysCount completed days',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
-                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
