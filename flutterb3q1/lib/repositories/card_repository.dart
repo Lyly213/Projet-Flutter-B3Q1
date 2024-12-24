@@ -1,13 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+// CardRepository manages user cards in Firebase Firestore
+// Methods for adding, deleting, updating and retrieving cards.
 class CardRepository {
   final FirebaseFirestore _firestore;
 
+  //The constructor takes an optional FirebaseFirestore object (by default, it uses the Firestore instance)
   CardRepository({FirebaseFirestore? firestore})
       : _firestore = firestore ?? FirebaseFirestore.instance;
 
-  //new card in the database (firebase)
   Future<void> addCard(String userId, String name, Color color, DateTime date, String hours, String frequency) async {
     await _firestore.collection('users').doc(userId).collection('cards').add({
       'name': name,
@@ -20,7 +22,6 @@ class CardRepository {
     });
   }
 
-  //get all cards from the database (firebase), and map them to a list of maps
   Stream<List<Map<String, dynamic>>> getCards(String userId) {
     return _firestore.collection('users').doc(userId).collection('cards').snapshots().map((snapshot) {
       return snapshot.docs.map((doc) {
@@ -38,7 +39,6 @@ class CardRepository {
     });
   }
 
-  //delete a card base in the id
   Future<void> deleteCard(String userId, String id) async {
     await _firestore.collection('users').doc(userId).collection('cards').doc(id).delete();
   }
@@ -75,7 +75,6 @@ class CardRepository {
     return querySnapshot.docs.length;
   }
 
-  //update the donnees of a card
   Future<void> updateCard(String userId, String id, String name, Color color, DateTime date, String hours, String frequency) async {
     await _firestore.collection('users').doc(userId).collection('cards').doc(id).update({
       'name': name,
@@ -86,7 +85,6 @@ class CardRepository {
     });
   }
 
-  //delete all cards with the same name and frequency
   Future<void> deleteOtherCards(String userId, String id, String name, String frequency) async {
     final querySnapshot = await _firestore
         .collection('users').doc(userId).collection('cards')
@@ -101,7 +99,6 @@ class CardRepository {
     }
   }
 
-  //update all cards with the same name and frequency
   Future<void> updateAllCardsByName(String userId, String originalName, String newName, Color color, String hours, String frequency) async {
     final querySnapshot = await _firestore
         .collection('users').doc(userId).collection('cards')

@@ -3,6 +3,8 @@ import '../../repositories/user_repository.dart';
 import 'signup_event.dart';
 import 'signup_state.dart';
 
+// block manages user sign up operations
+// interacts with UserRepository to manage user data and update user interface
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   final UserRepository userRepository;
 

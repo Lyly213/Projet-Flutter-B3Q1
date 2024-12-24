@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+// EditPage widget = edit or delete an existing habit card.
+// Edit habit details + delete habit
+// Updated details are returned to the previous screen when the user confirms changes.
 class EditPage extends StatefulWidget {
   final String id;
   final String name;
@@ -75,20 +78,6 @@ class _EditPageState extends State<EditPage> {
         ),
       ),
     );
-  }
-
-  void _updateCard() {
-    Navigator.pop(context, {
-      'action': 'update',
-      'id': widget.id,
-      'name': _habitNameController.text,
-      'originalName': widget.name,
-      'color': _selectedColor,
-      'date': _selectedDate,
-      'hours': _selectedHours,
-      'frequency': _selectedFrequency,
-      'originalFrequency': widget.frequency,
-    });
   }
 
   void _handleFrequencyChange() {

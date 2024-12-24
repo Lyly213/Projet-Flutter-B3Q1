@@ -1,3 +1,5 @@
+// Represents various card management states (loading, successful data retrieval, error handling and task completion countdown) 
+// These states are issued by the CardBloc according to the events triggered.
 abstract class CardState {}
 
 class CardsLoading extends CardState {}

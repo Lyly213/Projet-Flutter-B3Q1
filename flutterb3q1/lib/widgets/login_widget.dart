@@ -4,6 +4,8 @@ import 'package:flutterb3q1/blocs/login/login_bloc.dart';
 import 'package:flutterb3q1/blocs/login/login_event.dart';
 import 'package:flutterb3q1/blocs/login/login_state.dart';
 
+// Main widget for the login page
+// Listen to the LoginBloc and display the login form
 class LoginWidget extends StatelessWidget {
   const LoginWidget({super.key});
 
@@ -90,6 +92,7 @@ class LoginForm extends StatelessWidget {
     );
   }
 
+  // Function that adds the login event to the LonginBloc
   void _tryLogin(loginBloc) {
     loginBloc.add(SignInEvent(
         email: nameController.text, password: passwordController.text));

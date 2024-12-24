@@ -1,3 +1,5 @@
+// these are the events that will be used in the loginBloc
+
 abstract class LoginEvent {}
 
 class SignInEvent extends LoginEvent {
@@ -5,8 +7,6 @@ class SignInEvent extends LoginEvent {
   final String password;
 
   SignInEvent({required this.email, required this.password});
-
-  // SignInEvent(email: 'email', password: 'password');
 }
 
 class SignOutEvent extends LoginEvent {}

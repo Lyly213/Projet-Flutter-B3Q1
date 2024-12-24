@@ -1,5 +1,6 @@
 import '../../models/user.dart';
 
+//Represents the state of the login process (logging in, logged in, logged out, or an error)
 abstract class LoginState {
   const LoginState();
 }

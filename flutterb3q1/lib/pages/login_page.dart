@@ -5,6 +5,10 @@ import 'package:flutterb3q1/blocs/login/login_event.dart';
 import 'package:flutterb3q1/blocs/login/login_state.dart';
 import 'package:flutterb3q1/repositories/user_repository.dart';
 
+// LoginPage widget = login page + button for create a new account
+// Login form with email and password fields
+// Connect to the LoginBloc, UserRepository and Firebase
+// The page is the entry point for user login functionality
 class LoginPage extends StatelessWidget {
   final UserRepository userRepository;
 

@@ -1,3 +1,4 @@
+//represent the state of the sign up process (signing up, signed up, or an error)
 abstract class SignUpState {
   const SignUpState();
 }

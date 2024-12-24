@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+//These events are used to trigger state changes in the CardBloc.
+//(loading, adding, updating, deleting and the counting of completed tasks)
 abstract class CardEvent {}
 
 class LoadCardsEvent extends CardEvent {

@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
+//UserRepository manages user authentication in Firebase Authentication
+//Methods for signing in, signing out, signing up and getting the current user
 class UserRepository {
   final FirebaseAuth _firebaseAuth;
 

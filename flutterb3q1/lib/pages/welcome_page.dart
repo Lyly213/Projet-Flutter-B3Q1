@@ -9,6 +9,10 @@ import 'add_page.dart';
 import 'statistics_page.dart';
 import '../repositories/card_repository.dart';
 
+// MyHomePage widget = home page
+// 2 buttons (statistics and add)
+// previous and future days can be viewed
+// Card display
 class MyHomePage extends StatelessWidget {
   final String userId;
   final String title;
@@ -37,10 +41,6 @@ class MyHomePageContent extends StatefulWidget {
 class _MyHomePageContentState extends State<MyHomePageContent> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
-  // ignore: unused_field
-  int _completedTasksCount = 0;
-  // ignore: unused_field
-  int _totalTasksCount = 0;
 
   @override
   void initState() {
@@ -50,12 +50,8 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
   }
 
   void _updateCompletedTasksCount(String userId, DateTime day) async {
-    final cardRepository = RepositoryProvider.of<CardRepository>(context);
-    final count = await cardRepository.countCompletedTasksForDay(userId, day);
-    final total = await cardRepository.countTotalTasksForDay(userId, day);
+    RepositoryProvider.of<CardRepository>(context);
     setState(() {
-      _completedTasksCount = count;
-      _totalTasksCount = total;
     });
   }
 
@@ -115,8 +111,8 @@ class _MyHomePageContentState extends State<MyHomePageContent> {
                               margin: const EdgeInsets.symmetric(vertical: 8),
                               child: ListTile(
                                 leading: Checkbox(
-                                  tristate: true, // Pour dire que le checkbox peut être null
-                                  value: card['isFinished'] ?? false, // la mettre à false si elle est null
+                                  tristate: true, // To say that the checkbox can be null
+                                  value: card['isFinished'] ?? false,
                                   onChanged: (bool? value) {
                                     setState(() {
                                       card['isFinished'] = value ?? false;

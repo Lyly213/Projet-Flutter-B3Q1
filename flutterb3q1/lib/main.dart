@@ -8,13 +8,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'repositories/card_repository.dart';
 import 'pages/signup_page.dart';
 
+// Main entry point for the application
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase with the default options
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   final userRepository = UserRepository();
   runApp(
+    // Provides an instance of CardRepository that will be available to the entire application
     RepositoryProvider(
       create: (context) => CardRepository(),
       child: MyApp(userRepository: userRepository),
@@ -37,6 +41,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       initialRoute: userRepository.currentUser != null ? '/home' : '/login',
+      // Define the routes for the application
       routes: {
         '/login': (context) => LoginPage(userRepository: userRepository),
         '/home': (context) {

@@ -1,10 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutterb3q1/models/user.dart';
 import 'package:flutterb3q1/repositories/user_repository.dart';
-
 import 'login_event.dart';
 import 'login_state.dart';
 
+// block manages user login and logout operations
+// interacts with UserRepository to manage user data and update user interface
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final UserRepository userRepository;
 

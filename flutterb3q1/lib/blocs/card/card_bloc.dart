@@ -3,6 +3,8 @@ import 'package:flutterb3q1/repositories/card_repository.dart';
 import 'card_event.dart';
 import 'card_state.dart';
 
+// block manages card operations (loading, adding, updating and deleting cards)
+// interacts with CardRepository to manage data and update user interface
 class CardBloc extends Bloc<CardEvent, CardState> {
   final CardRepository cardRepository;
 

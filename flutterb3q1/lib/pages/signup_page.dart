@@ -5,6 +5,9 @@ import '../../blocs/signup/signup_event.dart';
 import '../../blocs/signup/signup_state.dart';
 import '../../repositories/user_repository.dart';
 
+// SignUpPage widget = registration page
+// Registration form with email and password fields
+// Once the form has been filled in, save in firebase and return to login page
 class SignUpPage extends StatelessWidget {
   final UserRepository userRepository;
 

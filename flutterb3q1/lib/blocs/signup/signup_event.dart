@@ -1,3 +1,4 @@
+//this event is used to manage user sign up operations
 abstract class SignUpEvent {}
 
 class SignUpRequested extends SignUpEvent {

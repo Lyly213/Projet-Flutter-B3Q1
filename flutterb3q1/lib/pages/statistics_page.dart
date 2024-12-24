@@ -8,6 +8,10 @@ import 'package:flutterb3q1/repositories/card_repository.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+// StatisticsPage widget = displays statistics on user habits
+// Display Hello with user name
+// Display calendar with user habits
+// Display number of days and tasks completed
 class StatisticsPage extends StatefulWidget {
   final String userId;
 
@@ -45,10 +49,6 @@ class _StatisticsPageState extends State<StatisticsPage> {
     });
   }
 
-  Future<String> _fetchUserNameFromFirebase(String userId) async {
-    return userId;
-  }
-
   void _loadDayStatuses() async {
     setState(() {
       isLoadingCompletedDays = true;
@@ -58,7 +58,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
     final Map<DateTime, String> statuses = {};
     int completedDays = 0;
 
-    for (int i = -30; i <= 30; i++) { //30 jours avant et après aujourd'hui
+    for (int i = -30; i <= 30; i++) { //30 days before and after today
       final day = DateTime.now().subtract(Duration(days: i));
       final normalizedDay = _normalizeDate(day);
 

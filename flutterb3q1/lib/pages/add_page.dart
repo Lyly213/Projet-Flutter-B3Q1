@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+// AddPage widget = create a new habit (habit name, date, time, frequency and color).
+// Once all required fields have been filled in, the habit details are returned to the previous screen in the form of a LIST of cards.
 class AddPage extends StatefulWidget {
   const AddPage({super.key});
 
