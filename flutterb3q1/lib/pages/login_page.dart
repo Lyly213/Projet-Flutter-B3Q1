@@ -100,7 +100,7 @@ class _LoginFormState extends State<LoginForm> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
-                    'Connection',
+                    'Connect to the habit tracker',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
